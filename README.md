@@ -9,7 +9,7 @@
 
 ## What existed before / what was built during the event
 
-- **Existed before:** [`github.com/bolouvipf/houetorwasm`](https://github.com/bolouvipf/houetorwasm) — research study + HOUETOR Plugin Host (WASM plugin phases 1-4, bench §8, MCP bridge). Used only as a **separate named resource / reference** — **never copied** into this repo (hard rule AGENTS.md#1).
+- **Existed before:** [`github.com/bolouvipf/houetorwasm`](https://github.com/bolouvipf/houetorwasm) — prior research study + HOUETOR Plugin Host (own work). Used only as **inspiration** and as a **separate named resource / reference** — **not closely linked and no code copied** into this repo (hard rule AGENTS.md#1).
 - **Built during the event (Oct 29 → Nov 4, this repo `tessercore` — public, created Oct 29):**
   - `b8465de` M0 init — scaffolding, `.env.example`, `check_llm`
   - `e1749de` M1 sandbox — QuickJS-WASM in Worker, `host.mjs` + watchdog, `evil_*` fixtures, 5 tests
