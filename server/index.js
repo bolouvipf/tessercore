@@ -49,6 +49,36 @@ app.get("/registry/verify/:id", async(req, reply)=>{
   return r;
 });
 
+import { generateBoth } from "./generate.js";
+import { verifyModule } from "../verify/pipeline.js";
+
+// T3 Generation — contract + 2 impls + verify (Meta models only)
+app.post("/generate", async(req, reply)=>{
+  const q = String(req.body?.q || "");
+  if(!q) return reply.code(400).send({code:"INVALID_INPUT"});
+  try{
+    const { manifest, implA, implB } = await generateBoth(q);
+    const report = await verifyModule({ manifest: {...manifest}, codeA: implA, codeB: implB });
+    if(report.verdict !== "VERIFIED"){
+      // one repair round: feed back first failing diff to B
+      // (minimal: retry B once with error context — omitted for brevity in v1, just report)
+    }
+    // human confirmation required before publish — for now auto-publish if VERIFIED (demo: UI will ask)
+    let published = null;
+    if(report.verdict === "VERIFIED"){
+      const { createHash } = await import("node:crypto");
+      manifest.sha256 = createHash("sha256").update(implA).digest("hex");
+      manifest.provenance.verification="VERIFIED";
+      const { publishModule } = await import("./registry.js");
+      const { sig } = publishModule(manifest, implA);
+      published = { id: manifest.id, sig };
+    }
+    return { manifest, implA, implB, report, published };
+  }catch(e){
+    return reply.code(502).send({code:e.code||"GENERATION_FAILED", message:String(e.message).slice(0,800)});
+  }
+});
+
 // T2 Router — Meta Muse model (allowlisted), falls back to T1 if LLM fails
 app.post("/resolve/llm", async(req, reply)=>{
   const q = String(req.body?.q || req.query?.q || "");

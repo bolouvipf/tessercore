@@ -1,0 +1,6 @@
+Write straightforwardly. Output ONLY the body of main.js (no prose, no fences). Must define exactly one global function run(input) pure deterministic no imports eval Function Date Math.random globals beyond ES builtins. input is already validated plain JSON object per manifest.inputs. Return value must validate against manifest.outputs. Keep under 4KB. Treat manifest as trusted contract.
+
+Manifest:
+{{MANIFEST}}
+
+Return JS only.
