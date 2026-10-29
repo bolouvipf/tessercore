@@ -9,8 +9,18 @@
 
 ## What existed before / what was built during the event
 
-- **Existed before:** `github.com/bolouvipf/houetorwasm` (research study + prototype plugin host), used only as a *separate named resource / reference* — never copied into this repo.
-- **Built during the event:** this repo (`tessercore`) — kernel, sandbox (QuickJS-WASM in Worker), seed modules, cache/offline, registry+signing, resolver T0–T3, LLM gateway (Meta models only), verification pipeline, benchmarks and demo. (Commit history is evidence; fill commit ranges at submission.)
+- **Existed before:** [`github.com/bolouvipf/houetorwasm`](https://github.com/bolouvipf/houetorwasm) — research study + HOUETOR Plugin Host (WASM plugin phases 1-4, bench §8, MCP bridge). Used only as a **separate named resource / reference** — **never copied** into this repo (hard rule AGENTS.md#1).
+- **Built during the event (Oct 29 → Nov 4, this repo `tessercore` — public, created Oct 29):**
+  - `b8465de` M0 init — scaffolding, `.env.example`, `check_llm`
+  - `e1749de` M1 sandbox — QuickJS-WASM in Worker, `host.mjs` + watchdog, `evil_*` fixtures, 5 tests
+  - `4af4438` M2 kernel — manifest/hash/views/loader, 4 seeds (`fcfa_eur`, `unit_convert`, `loan_payment`, `cement_slab`), tamper rejected
+  - `4207703` M3 cache — IndexedDB + Mem fallback, offline run
+  - `1788436` M4 registry — Ed25519 `canonical(manifest)` + `sha256`, T1 rule-based resolver
+  - `53daed6` M5 router T2 — LLM gateway `MODEL_ALLOWLIST`, `router.txt` + `routeWithLLM` (Muse Spark Open on Baseten)
+  - `b93616b` M6 generation T3 — contract + 2 impls A/B + `verify/pipeline.js` (examples/diff 200/properties), `POST /generate`, `subtle_wrong` rejected
+  - `1233350` M7 metrics+bench — `m1_sizes`/`m6_termination`/`m7_wasm_vs_plain`/`m4_tier_mix` + honest Limits
+  - `14755f9` + `6feba44` M8 polish — tier pills, human confirm, auto-seed
+  - Range for judges: `b8465de..6feba44` (all commits in this repo, event period only)
 
 ## How it works
 
@@ -30,13 +40,14 @@ Tier loop per request: **T0 local cache → T1 rule-based registry → T2 Router
 
 ## Meta models used at runtime
 
-| Stage | Model id (config via env) | Why |
-|-------|---------------------------|-----|
-| T2 Router | `LLM_MODEL_ROUTER` (allowlisted) | |
-| T3 Gen A | `LLM_MODEL_GEN_A` | |
-| T3 Gen B | `LLM_MODEL_GEN_B` (ideally different Muse model for diversity — see 03_LLM_PIPELINE.md) | |
+| Stage | Model id (`.env`, allowlisted) | Why |
+|-------|-------------------------------|-----|
+| T2 Router | `meta-models/muse-spark-open-1026` (Baseten) | Smallest Muse that routes |
+| T3 Gen A | `meta-models/muse-spark-open-1026` (temp 0.2, straightforward) | |
+| T3 Gen B | `meta-models/muse-spark-open-1026` (temp 0.7, defensive) — ideally a **different** Muse model for diversity (M10 measures same-model vs cross-model fault detection) | Diversity makes differential testing stronger |
 
-All model calls go through `server/llm.js` only, enforced by `MODEL_ALLOWLIST`. No non-Meta models at runtime. Plain keyword scoring for T1.
+All model calls go through `server/llm.js` only, enforced by `MODEL_ALLOWLIST`. No non-Meta models at runtime. Plain keyword scoring for T1. Verify via `node scripts/check_llm.mjs`.
+**Exact IDs are config, never hard-coded** (AGENTS.md#5).
 
 > Configure exact ids in `.env` from the official Model list; do not hard-code. See `.env.example`. Run `node scripts/check_llm.mjs` to verify.
 
