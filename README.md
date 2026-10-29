@@ -5,7 +5,7 @@
 
 - **Thesis:** Push the Frontier — give software a new capability at runtime, safely.
 - **First customer (default, to validate — see `07_PRODUCT_AND_AUDIENCE.md`):** teams building AI agents/apps where the model must produce small tools at runtime and cannot afford unverified code.
-- **Track:** Startups (solo). Built Oct 27–Nov 4 for the Meta Global AI Developer Hackathon.
+- **Track:** **Indie** (solo, BOLOUVI Pierre Florent — not incorporated). Built Oct 27–Nov 4 for the Meta Global AI Developer Hackathon.
 
 ## What existed before / what was built during the event
 
@@ -106,7 +106,7 @@ npm test
 
 ## Author / License
 
-Solo — MIT. See `LICENSE`.
+**BOLOUVI Pierre Florent** (Indie, solo) — MIT. See `LICENSE`.
 
 ## Specs
 
