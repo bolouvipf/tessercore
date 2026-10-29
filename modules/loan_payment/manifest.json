@@ -1,0 +1,114 @@
+{
+  "id": "loan_payment",
+  "version": "1.0.0",
+  "title": "Loan payment",
+  "description": "Monthly payment, total interest and total paid from principal, annual rate and duration.",
+  "language": "en",
+  "intents": [
+    "loan payment",
+    "mensualité crédit",
+    "calcul prêt"
+  ],
+  "inputs": {
+    "type": "object",
+    "required": [
+      "principal",
+      "annual_rate_percent",
+      "months"
+    ],
+    "properties": {
+      "principal": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1000000000000
+      },
+      "annual_rate_percent": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "months": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 600
+      }
+    }
+  },
+  "outputs": {
+    "type": "object",
+    "required": [
+      "payment"
+    ],
+    "properties": {
+      "payment": {
+        "type": "number"
+      },
+      "total_interest": {
+        "type": "number"
+      },
+      "total_paid": {
+        "type": "number"
+      }
+    }
+  },
+  "permissions": [],
+  "limits": {
+    "timeout_ms": 200,
+    "memory_kb": 8192,
+    "output_max_bytes": 4096
+  },
+  "examples": [
+    {
+      "input": {
+        "principal": 12000,
+        "annual_rate_percent": 0,
+        "months": 12
+      },
+      "output": {
+        "payment": 1000,
+        "total_interest": 0,
+        "total_paid": 12000
+      }
+    },
+    {
+      "input": {
+        "principal": 100000,
+        "annual_rate_percent": 5,
+        "months": 12
+      },
+      "output": {
+        "payment": 8560.748,
+        "total_interest": 2728.98,
+        "total_paid": 102728.98
+      }
+    }
+  ],
+  "properties": [
+    {
+      "name": "non_negative",
+      "expr": "output.payment >= 0"
+    }
+  ],
+  "tolerance": {
+    "relative": 0.000001,
+    "absolute": 0.01
+  },
+  "view": {
+    "type": "keyvalue",
+    "labels": {
+      "payment": "Monthly payment",
+      "total_interest": "Total interest",
+      "total_paid": "Total paid"
+    }
+  },
+  "assumptions": [
+    "Fixed rate, no fees, monthly compounding."
+  ],
+  "provenance": {
+    "origin": "seed",
+    "model": null,
+    "created_at": "2026-10-29T00:00:00Z",
+    "verification": "VERIFIED"
+  },
+  "sha256": "db4ade3eb71a5796262720ffbb959914e06b9ac59c61ee5764567804588293df"
+}

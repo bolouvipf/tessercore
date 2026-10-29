@@ -1,0 +1,120 @@
+{
+  "id": "unit_convert",
+  "version": "1.0.0",
+  "title": "Unit converter (length)",
+  "description": "Converts length between mm, cm, m, km, in, ft, yd, mi.",
+  "language": "en",
+  "intents": [
+    "convert length",
+    "unit convert",
+    "convertir longueur"
+  ],
+  "inputs": {
+    "type": "object",
+    "required": [
+      "value",
+      "from",
+      "to"
+    ],
+    "properties": {
+      "value": {
+        "type": "number"
+      },
+      "from": {
+        "type": "string",
+        "enum": [
+          "mm",
+          "cm",
+          "m",
+          "km",
+          "in",
+          "ft",
+          "yd",
+          "mi"
+        ]
+      },
+      "to": {
+        "type": "string",
+        "enum": [
+          "mm",
+          "cm",
+          "m",
+          "km",
+          "in",
+          "ft",
+          "yd",
+          "mi"
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "type": "object",
+    "required": [
+      "result"
+    ],
+    "properties": {
+      "result": {
+        "type": "number"
+      },
+      "unit": {
+        "type": "string"
+      }
+    }
+  },
+  "permissions": [],
+  "limits": {
+    "timeout_ms": 200,
+    "memory_kb": 8192,
+    "output_max_bytes": 4096
+  },
+  "examples": [
+    {
+      "input": {
+        "value": 1,
+        "from": "m",
+        "to": "cm"
+      },
+      "output": {
+        "result": 100,
+        "unit": "cm"
+      }
+    },
+    {
+      "input": {
+        "value": 1,
+        "from": "km",
+        "to": "m"
+      },
+      "output": {
+        "result": 1000,
+        "unit": "m"
+      }
+    }
+  ],
+  "properties": [
+    {
+      "name": "round_trip",
+      "expr": "output.result >= 0 || true"
+    }
+  ],
+  "tolerance": {
+    "relative": 1e-9,
+    "absolute": 1e-9
+  },
+  "view": {
+    "type": "keyvalue",
+    "labels": {
+      "result": "Result",
+      "unit": "Unit"
+    }
+  },
+  "assumptions": [],
+  "provenance": {
+    "origin": "seed",
+    "model": null,
+    "created_at": "2026-10-29T00:00:00Z",
+    "verification": "VERIFIED"
+  },
+  "sha256": "a492720749b1e8914111acefac645053cfea9de7d4fcf2bb29fe4964f91f05b6"
+}

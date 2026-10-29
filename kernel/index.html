@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tessercore — kernel</title>
+<style>body{font-family:system-ui;max-width:720px;margin:2rem auto}label{margin:.5rem 0}dl{display:grid;grid-template-columns:1fr 1fr}pre{background:#f5f5f5;padding:.5rem;overflow:auto}</style>
+<h1>Tessercore kernel (M2)</h1>
+<p id="status">Loading…</p>
+<div>
+  <input id="q" placeholder="e.g. convert 5000 fcfa to eur" style="width:70%">
+  <button id="go">Run</button>
+</div>
+<div id="form"></div>
+<div id="out"></div>
+<pre id="log"></pre>
+<script type="module">
+import { validateManifest } from "./manifest.js";
+import { sha256Hex } from "./hash.js";
+import { buildInputForm, renderOutput } from "./views.js";
+const log = (m)=> document.getElementById("log").textContent += m+"\n";
+let current = null, formCtl=null;
+async function loadModule(id){
+  const mf = await fetch(`/modules/${id}/manifest.json`).then(r=>r.json());
+  const code = await fetch(`/modules/${id}/main.js`).then(r=>r.text());
+  const hash = await sha256Hex(code);
+  const v = validateManifest(mf, {checkHash:hash, codeText:code});
+  log(`load ${id}: hash ${hash.slice(0,8)} valid=${v.ok} ${v.errors.map(e=>e.message).join("; ")}`);
+  if(!v.ok) throw new Error(v.errors[0].message);
+  return {mf, code};
+}
+async function runCurrent(){
+  if(!current) return;
+  const input = formCtl.getValues();
+  const worker = new Worker(new URL("../sandbox/worker.js", import.meta.url), {type:"module"});
+  const { loadAndRun } = await import("./loader.js");
+  const r = await loadAndRun({manifest:current.mf, code:current.code, input, worker});
+  // fallback: if worker failed to load (no CDN), use host simulation already done
+  const outEl=document.getElementById("out");
+  if(r.ok) renderOutput(current.mf, r.output, outEl); else outEl.textContent = `Error ${r.error.code}: ${r.error.message}`;
+  log(`run ${current.mf.id} -> ${JSON.stringify(r).slice(0,300)}`);
+  worker.terminate();
+}
+// demo: load fcfa
+loadModule("fcfa_eur_convert").then(({mf,code})=>{
+  current={mf,code};
+  document.getElementById("status").textContent = mf.title + " — permissions: " + JSON.stringify(mf.permissions);
+  formCtl = buildInputForm(mf, document.getElementById("form"), mf.examples[0].input);
+  const btn=document.createElement("button"); btn.textContent="Run"; btn.onclick=runCurrent;
+  document.getElementById("form").appendChild(btn);
+}).catch(e=>log(String(e)));
+document.getElementById("go").onclick = ()=> log("T2/T3 resolver not yet (M4/M5)");
+</script>

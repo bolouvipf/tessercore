@@ -1,0 +1,121 @@
+{
+  "id": "cement_slab",
+  "version": "1.0.0",
+  "title": "Cement for slab",
+  "description": "Volume, cement mass and 50kg bags for a rectangular slab.",
+  "language": "en",
+  "intents": [
+    "cement slab",
+    "béton dalle",
+    "ciment dalle"
+  ],
+  "inputs": {
+    "type": "object",
+    "required": [
+      "length_m",
+      "width_m",
+      "thickness_m"
+    ],
+    "properties": {
+      "length_m": {
+        "type": "number",
+        "minimum": 0.1,
+        "maximum": 1000
+      },
+      "width_m": {
+        "type": "number",
+        "minimum": 0.1,
+        "maximum": 1000
+      },
+      "thickness_m": {
+        "type": "number",
+        "minimum": 0.01,
+        "maximum": 10
+      },
+      "cement_kg_per_m3": {
+        "type": "number",
+        "default": 350,
+        "minimum": 100,
+        "maximum": 600
+      }
+    }
+  },
+  "outputs": {
+    "type": "object",
+    "required": [
+      "volume_m3"
+    ],
+    "properties": {
+      "volume_m3": {
+        "type": "number"
+      },
+      "cement_kg": {
+        "type": "number"
+      },
+      "bags_50kg": {
+        "type": "integer"
+      }
+    }
+  },
+  "permissions": [],
+  "limits": {
+    "timeout_ms": 200,
+    "memory_kb": 8192,
+    "output_max_bytes": 4096
+  },
+  "examples": [
+    {
+      "input": {
+        "length_m": 5,
+        "width_m": 4,
+        "thickness_m": 0.1
+      },
+      "output": {
+        "volume_m3": 2,
+        "cement_kg": 700,
+        "bags_50kg": 14
+      }
+    },
+    {
+      "input": {
+        "length_m": 10,
+        "width_m": 10,
+        "thickness_m": 0.15,
+        "cement_kg_per_m3": 300
+      },
+      "output": {
+        "volume_m3": 15,
+        "cement_kg": 4500,
+        "bags_50kg": 90
+      }
+    }
+  ],
+  "properties": [
+    {
+      "name": "non_negative",
+      "expr": "output.volume_m3 >= 0"
+    }
+  ],
+  "tolerance": {
+    "relative": 1e-9,
+    "absolute": 1e-9
+  },
+  "view": {
+    "type": "keyvalue",
+    "labels": {
+      "volume_m3": "Volume (m³)",
+      "cement_kg": "Cement (kg)",
+      "bags_50kg": "Bags (50kg)"
+    }
+  },
+  "assumptions": [
+    "Default dosage 350 kg/m³ — override via cement_kg_per_m3; does not include waste or reinforcement."
+  ],
+  "provenance": {
+    "origin": "seed",
+    "model": null,
+    "created_at": "2026-10-29T00:00:00Z",
+    "verification": "VERIFIED"
+  },
+  "sha256": "50ade624aa65448df21999e27bc4185870db5b44877d290b09df0005861e46c6"
+}
