@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { listManifests, getModule, publishModule, verifyStored } from "./registry.js";
 import { resolveT1 } from "./resolver.js";
 import { verifyManifest } from "./signer.js";
+import { routeWithLLM } from "./router.js";
 
 const app = Fastify({ logger: true });
 
@@ -46,6 +47,20 @@ app.get("/registry/verify/:id", async(req, reply)=>{
   const r = verifyStored(req.params.id);
   if(!r.ok && r.error==="NOT_FOUND") return reply.code(404).send(r);
   return r;
+});
+
+// T2 Router — Meta Muse model (allowlisted), falls back to T1 if LLM fails
+app.post("/resolve/llm", async(req, reply)=>{
+  const q = String(req.body?.q || req.query?.q || "");
+  if(!q) return reply.code(400).send({code:"INVALID_INPUT"});
+  try{
+    const r = await routeWithLLM(q);
+    return r;
+  }catch(e){
+    const code = e.code || "LLM_ERROR";
+    if(code==="MODEL_NOT_ALLOWED") return reply.code(400).send({code, message:e.message});
+    return reply.code(502).send({code, message: String(e.message).slice(0,500)});
+  }
 });
 
 const port = Number(process.env.PORT || 8787);
