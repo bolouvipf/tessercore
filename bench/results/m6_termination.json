@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29T02:51:13.830Z",
+  "device": "Node v24.15.0 win32",
+  "timeout_ms": 200,
+  "results": [
+    {
+      "name": "evil_loop",
+      "ok": false,
+      "error": {
+        "code": "TIMEOUT",
+        "message": "interrupted after 197ms: interrupted"
+      },
+      "latency_ms": 197.06879999999998,
+      "mechanism": "interrupt",
+      "wall_ms": "238.83"
+    },
+    {
+      "name": "evil_mem",
+      "ok": false,
+      "error": {
+        "code": "MEMORY_LIMIT",
+        "message": "string too long"
+      },
+      "latency_ms": 2.2577,
+      "mechanism": "interrupt",
+      "wall_ms": "4.00"
+    }
+  ],
+  "mechanism_note": "interrupt (QuickJS shouldInterruptAfterDeadline) + watchdog terminate +50ms; browser Worker.terminate() is hard watchdog"
+}

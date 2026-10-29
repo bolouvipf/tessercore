@@ -1,7 +1,7 @@
 node_modules/
 .env
-bench/results/*.json
-!bench/results/.gitkeep
+!bench/results/*.json
+bench/results/.gitkeep
 .DS_Store
 dist/
 *.log

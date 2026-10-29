@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-29T02:50:44.960Z",
+  "device": "Node v24.15.0 win32 x64",
+  "kernel": {
+    "files": {
+      "kernel/hash.js": {
+        "raw_kb": "0.23",
+        "gz_kb": "0.20"
+      },
+      "kernel/manifest.js": {
+        "raw_kb": "1.42",
+        "gz_kb": "0.59"
+      },
+      "kernel/views.js": {
+        "raw_kb": "4.60",
+        "gz_kb": "1.43"
+      },
+      "kernel/loader.js": {
+        "raw_kb": "1.70",
+        "gz_kb": "0.79"
+      },
+      "kernel/cache.js": {
+        "raw_kb": "1.80",
+        "gz_kb": "0.64"
+      },
+      "kernel/metrics.js": {
+        "raw_kb": "0.78",
+        "gz_kb": "0.40"
+      },
+      "kernel/resolver.js": {
+        "raw_kb": "0.06",
+        "gz_kb": "0.07"
+      }
+    },
+    "total_raw_kb": "10.59",
+    "total_gz_kb": "4.12"
+  },
+  "engine": {
+    "quickjs_js_kb": "2318.24",
+    "wasm_kb": "0.00",
+    "note": "dist/index.global.js (includes WASM base64) raw 2373880 gz 693102 — lazy-loaded once, cached",
+    "quickjs_gz_kb": "676.86"
+  },
+  "modules": [
+    {
+      "id": "fcfa_eur_convert",
+      "manifest_kb": "2.03",
+      "main_kb": "0.30",
+      "total_kb": "2.33"
+    },
+    {
+      "id": "unit_convert",
+      "manifest_kb": "2.01",
+      "main_kb": "0.33",
+      "total_kb": "2.34"
+    },
+    {
+      "id": "loan_payment",
+      "manifest_kb": "2.23",
+      "main_kb": "0.36",
+      "total_kb": "2.60"
+    },
+    {
+      "id": "cement_slab",
+      "manifest_kb": "2.34",
+      "main_kb": "0.27",
+      "total_kb": "2.61"
+    }
+  ],
+  "limits_note": "kernel gz target <=30KB (excl. engine); engine size must be reported honestly (see M1)"
+}

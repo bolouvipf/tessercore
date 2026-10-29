@@ -1,0 +1,312 @@
+{
+  "date": "2026-10-29T02:51:23.926Z",
+  "total": 45,
+  "byTier": {
+    "T1": 21,
+    "T0": 15,
+    "T3": 8,
+    "T2": 1
+  },
+  "pct": {
+    "T1": "46.7%",
+    "T0": "33.3%",
+    "T3": "17.8%",
+    "T2": "2.2%"
+  },
+  "llmCalls": 33,
+  "avoided_percent": "80.0",
+  "metrics": [
+    {
+      "query": "convert 5000 fcfa to eur",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 1.1978999999999758
+    },
+    {
+      "query": "convertir 1000 fcfa en euro",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.3421000000000163
+    },
+    {
+      "query": "convert 5000 fcfa to eur",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.015700000000009595
+    },
+    {
+      "query": "convert length 100 m to ft",
+      "tier": "T1",
+      "llm": 0,
+      "module": "unit_convert",
+      "latency": 0.3196999999999832
+    },
+    {
+      "query": "unit convert 1 km to m",
+      "tier": "T1",
+      "llm": 0,
+      "module": "unit_convert",
+      "latency": 0.3574999999999875
+    },
+    {
+      "query": "convert length 100 m to ft",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.010199999999997544
+    },
+    {
+      "query": "loan payment 12000 0% 12 months",
+      "tier": "T1",
+      "llm": 0,
+      "module": "loan_payment",
+      "latency": 0.37409999999999854
+    },
+    {
+      "query": "calculate loan 100000 5% 60 months",
+      "tier": "T1",
+      "llm": 0,
+      "module": "loan_payment",
+      "latency": 0.3049000000000035
+    },
+    {
+      "query": "loan payment 12000 0% 12 months",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.009600000000006048
+    },
+    {
+      "query": "cement for 5x4 slab 10cm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "cement_slab",
+      "latency": 0.3079999999999927
+    },
+    {
+      "query": "béton dalle 10m x 10m 15cm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "cement_slab",
+      "latency": 0.3200999999999965
+    },
+    {
+      "query": "cement for 5x4 slab 10cm",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.020600000000001728
+    },
+    {
+      "query": "convert 200 eur to fcfa",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.3120000000000118
+    },
+    {
+      "query": "convert 200 eur to fcfa",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.005899999999996908
+    },
+    {
+      "query": "convert 5000 fcfa to eur",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.005200000000002092
+    },
+    {
+      "query": "convert 10 kg to pounds",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.2942999999999927
+    },
+    {
+      "query": "convert kg to lbs",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.4730999999999881
+    },
+    {
+      "query": "convert 10 kg to pounds",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.011899999999997135
+    },
+    {
+      "query": "unknown request xyz poem",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.17040000000000077
+    },
+    {
+      "query": "write a poem",
+      "tier": "T2",
+      "llm": 1,
+      "latency": 0.10410000000001673
+    },
+    {
+      "query": "unknown request xyz poem",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.19920000000001892
+    },
+    {
+      "query": "convert 1 m to cm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.4767999999999972
+    },
+    {
+      "query": "convert 1 m to cm",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.010500000000007503
+    },
+    {
+      "query": "convert 1 km to m",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.3429999999999893
+    },
+    {
+      "query": "loan 50000 3% 24 months",
+      "tier": "T1",
+      "llm": 0,
+      "module": "loan_payment",
+      "latency": 0.3207999999999913
+    },
+    {
+      "query": "loan 50000 3% 24 months",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.014299999999991542
+    },
+    {
+      "query": "cement slab 2x2 5cm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "cement_slab",
+      "latency": 0.3353999999999928
+    },
+    {
+      "query": "cement slab 2x2 5cm",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.002200000000016189
+    },
+    {
+      "query": "convert fcfa eur 1000",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.23380000000000223
+    },
+    {
+      "query": "convert fcfa eur 1000",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.023400000000009413
+    },
+    {
+      "query": "random unknown 1",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.12370000000001369
+    },
+    {
+      "query": "random unknown 2",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.09020000000001005
+    },
+    {
+      "query": "random unknown 3",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.10320000000001528
+    },
+    {
+      "query": "random unknown 4",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.056099999999986494
+    },
+    {
+      "query": "convert length 5 ft to cm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "unit_convert",
+      "latency": 0.32550000000000523
+    },
+    {
+      "query": "convert length 5 ft to cm",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.0027000000000043656
+    },
+    {
+      "query": "convert 100 eur to xof",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.2944999999999993
+    },
+    {
+      "query": "convert 100 eur to xof",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.002200000000016189
+    },
+    {
+      "query": "loan payment 200000 4.5% 120 months",
+      "tier": "T1",
+      "llm": 0,
+      "module": "loan_payment",
+      "latency": 0.3907000000000096
+    },
+    {
+      "query": "loan payment 200000 4.5% 120 months",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.0033999999999991815
+    },
+    {
+      "query": "cement 3x3 0.12m 350kg",
+      "tier": "T1",
+      "llm": 0,
+      "module": "cement_slab",
+      "latency": 0.5194999999999936
+    },
+    {
+      "query": "cement 3x3 0.12m 350kg",
+      "tier": "T0",
+      "llm": 0,
+      "latency": 0.003999999999990678
+    },
+    {
+      "query": "unknown foo",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.19409999999999172
+    },
+    {
+      "query": "unknown bar",
+      "tier": "T3",
+      "llm": 4,
+      "latency": 0.19820000000001414
+    },
+    {
+      "query": "convert 1 m to mm",
+      "tier": "T1",
+      "llm": 0,
+      "module": "fcfa_eur_convert",
+      "latency": 0.8703999999999894
+    }
+  ],
+  "note": "Simulated scripted session 50 reqs from empty registry; T0=local cache, T1=rule-based, T2=router, T3=generation — counts llm_calls per request; real bench should run live LLM for T2/T3 and measure bytes/latency"
+}

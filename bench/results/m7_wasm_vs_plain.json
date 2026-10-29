@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-29T02:51:43.363Z",
+  "device": "Node v24.15.0",
+  "N": 1000,
+  "plain_total_ms": "14.39",
+  "plain_per_call_ms": "0.0144",
+  "wasm_total_ms": "1574.34",
+  "wasm_per_call_ms": "1.5743",
+  "ratio_wasm_over_plain": "109.44",
+  "isolation": "WASM: QuickJS inside WASM inside Worker — no DOM/fetch/globals; Plain: Worker only — globals still present, weaker isolation",
+  "note": "Plain is faster (expected); WASM cost is engine size + startup but stronger isolation + uniform engine"
+}
