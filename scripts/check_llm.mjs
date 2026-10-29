@@ -27,7 +27,7 @@ async function checkOne(label, model) {
   const key = process.env.LLM_API_KEY || "";
   if (!base || !key) { console.error(`${label}: missing LLM_BASE_URL or LLM_API_KEY`); return; }
   const url = `${base}/chat/completions`;
-  const body = JSON.stringify({ model, messages: [{role:"user", content:"Reply with JSON only: {\"ok\": true}"}], max_tokens: 32, temperature: 0 });
+  const body = JSON.stringify({ model, messages: [{role:"user", content:"Reply with JSON only: {\"ok\": true}"}], max_tokens: 6000, temperature: 0 });
   const t0 = performance.now();
   const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${key}` }, body });
   const dt = (performance.now()-t0).toFixed(0);

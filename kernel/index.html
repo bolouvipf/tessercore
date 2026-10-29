@@ -2,50 +2,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tessercore — kernel</title>
-<style>body{font-family:system-ui;max-width:720px;margin:2rem auto}label{margin:.5rem 0}dl{display:grid;grid-template-columns:1fr 1fr}pre{background:#f5f5f5;padding:.5rem;overflow:auto}</style>
-<h1>Tessercore kernel (M2)</h1>
+<style>
+  body{font-family:system-ui;max-width:720px;margin:2rem auto;line-height:1.4}
+  label{display:block;margin:.6rem 0} label span{font-size:.85em;color:#555}
+  input,select{margin-left:.5rem}
+  #log{background:#f5f5f5;padding:.5rem;overflow:auto;white-space:pre-wrap}
+  .pill{display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;padding:.1rem .4rem;border-radius:999px;font-size:.8em}
+  details{margin-top:.6rem}
+</style>
+<h1>Tessercore <span class="pill">M7</span></h1>
 <p id="status">Loading…</p>
 <div>
   <input id="q" placeholder="e.g. convert 5000 fcfa to eur" style="width:70%">
-  <button id="go">Run</button>
+  <button id="go">Resolve</button>
+  <span id="tier" class="pill"></span>
 </div>
-<div id="form"></div>
-<div id="out"></div>
+<div id="form" style="margin-top:1rem"></div>
+<div id="out" style="margin-top:1rem;border:1px solid #ddd;padding:.6rem;min-height:2rem"></div>
 <pre id="log"></pre>
 <script type="module">
 import { validateManifest } from "./manifest.js";
 import { sha256Hex } from "./hash.js";
 import { buildInputForm, renderOutput } from "./views.js";
+import { record, tierMix } from "./metrics.js";
 const log = (m)=> document.getElementById("log").textContent += m+"\n";
-let current = null, formCtl=null;
-async function loadModule(id){
-  const mf = await fetch(`/modules/${id}/manifest.json`).then(r=>r.json());
-  const code = await fetch(`/modules/${id}/main.js`).then(r=>r.text());
+const tierEl = document.getElementById("tier");
+let current=null, formCtl=null;
+
+async function loadFromRegistry(id){
+  const r = await fetch(`/registry/modules/${id}`);
+  if(!r.ok) throw new Error("registry "+r.status);
+  const {manifest, code, sig} = await r.json();
   const hash = await sha256Hex(code);
-  const v = validateManifest(mf, {checkHash:hash, codeText:code});
-  log(`load ${id}: hash ${hash.slice(0,8)} valid=${v.ok} ${v.errors.map(e=>e.message).join("; ")}`);
+  const v = validateManifest(manifest, {checkHash:hash, codeText:code});
+  log(`verify ${id}: hash ${hash.slice(0,8)} sig ${sig.slice(0,8)} valid=${v.ok}`);
   if(!v.ok) throw new Error(v.errors[0].message);
-  return {mf, code};
+  return {manifest, code};
 }
+
+async function resolveQuery(q){
+  // T1 rule-based first (no LLM)
+  const r1 = await fetch(`/registry/resolve?q=${encodeURIComponent(q)}`).then(r=>r.json());
+  if(r1.module_id){ tierEl.textContent="T1 rule-based (0 LLM)"; record({tier:"T1", llm_calls:0, module_id:r1.module_id}); return r1.module_id; }
+  // T2 Muse router
+  tierEl.textContent="T2 routing…";
+  const r2 = await fetch("/resolve/llm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
+  if(r2.module_id){ record({tier:"T2", llm_calls:1, module_id:r2.module_id}); return r2.module_id; }
+  // T3 generation
+  tierEl.textContent="T3 generating…";
+  log("T3: drafting contract + 2 impls…");
+  const r3 = await fetch("/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
+  log(`T3 verdict ${r3.report.verdict} — ${r3.report.checks.map(c=>c.name+":"+c.ok).join(", ")}`);
+  if(r3.report.verdict!=="VERIFIED") throw new Error("generation rejected: "+r3.report.verdict);
+  // show assumptions + example for human confirm
+  const ok = confirm(`Generated ${r3.manifest.title}\nAssumptions: ${(r3.manifest.assumptions||[]).join("; ")}\nExample: ${JSON.stringify(r3.manifest.examples[0])}\nLooks right?`);
+  if(!ok) throw new Error("human rejected");
+  record({tier:"T3", llm_calls:4, module_id:r3.manifest.id});
+  return r3.manifest.id;
+}
+
+document.getElementById("go").onclick = async ()=>{
+  const q=document.getElementById("q").value.trim();
+  if(!q) return;
+  const t0=performance.now();
+  try{
+    const id = await resolveQuery(q);
+    const {manifest, code} = await loadFromRegistry(id);
+    current={manifest, code};
+    document.getElementById("status").textContent = `${manifest.title} — permissions: ${JSON.stringify(manifest.permissions)} — view: ${manifest.view.type}`;
+    formCtl = buildInputForm(manifest, document.getElementById("form"), manifest.examples[0].input);
+    const btn=document.createElement("button"); btn.textContent="Run (sandbox)"; btn.onclick=runCurrent;
+    document.getElementById("form").appendChild(btn);
+    // render assumptions
+    if(manifest.assumptions?.length){ const d=document.createElement("details"); const s=document.createElement("summary"); s.textContent="Assumptions"; d.appendChild(s); const ul=document.createElement("ul"); for(const a of manifest.assumptions){const li=document.createElement("li"); li.textContent=a; ul.appendChild(li);} d.appendChild(ul); document.getElementById("form").appendChild(d); }
+    tierEl.textContent += ` — ${Math.round(performance.now()-t0)}ms`;
+    log(`metrics mix: ${JSON.stringify(tierMix().pct)} avoided ${tierMix().avoided}`);
+  }catch(e){ document.getElementById("out").textContent = String(e.message||e); log(String(e)); }
+};
+
 async function runCurrent(){
   if(!current) return;
   const input = formCtl.getValues();
   const worker = new Worker(new URL("../sandbox/worker.js", import.meta.url), {type:"module"});
   const { loadAndRun } = await import("./loader.js");
-  const r = await loadAndRun({manifest:current.mf, code:current.code, input, worker});
-  // fallback: if worker failed to load (no CDN), use host simulation already done
+  const r = await loadAndRun({manifest:current.manifest, code:current.code, input, worker});
   const outEl=document.getElementById("out");
-  if(r.ok) renderOutput(current.mf, r.output, outEl); else outEl.textContent = `Error ${r.error.code}: ${r.error.message}`;
-  log(`run ${current.mf.id} -> ${JSON.stringify(r).slice(0,300)}`);
+  if(r.ok) renderOutput(current.manifest, r.output, outEl); else outEl.textContent = `Error ${r.error.code}: ${r.error.message}`;
+  log(`run ${current.manifest.id} -> ${JSON.stringify(r).slice(0,400)}`);
   worker.terminate();
-}
-// demo: load fcfa
-loadModule("fcfa_eur_convert").then(({mf,code})=>{
-  current={mf,code};
-  document.getElementById("status").textContent = mf.title + " — permissions: " + JSON.stringify(mf.permissions);
-  formCtl = buildInputForm(mf, document.getElementById("form"), mf.examples[0].input);
-  const btn=document.createElement("button"); btn.textContent="Run"; btn.onclick=runCurrent;
-  document.getElementById("form").appendChild(btn);
+};
+// auto-demo fcfa on load
+loadFromRegistry("fcfa_eur_convert").then(({manifest,code})=>{
+  current={manifest,code};
+  document.getElementById("status").textContent = `${manifest.title} — permissions: ${JSON.stringify(manifest.permissions)}`;
+  formCtl = buildInputForm(manifest, document.getElementById("form"), manifest.examples[0].input);
+  const btn=document.createElement("button"); btn.textContent="Run"; btn.onclick=runCurrent; document.getElementById("form").appendChild(btn);
 }).catch(e=>log(String(e)));
-document.getElementById("go").onclick = ()=> log("T2/T3 resolver not yet (M4/M5)");
 </script>
