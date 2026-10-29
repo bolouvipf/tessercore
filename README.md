@@ -49,6 +49,8 @@ Tier loop per request: **T0 local cache → T1 rule-based registry → T2 Router
 All model calls go through `server/llm.js` only, enforced by `MODEL_ALLOWLIST`. No non-Meta models at runtime. Plain keyword scoring for T1. Verify via `node scripts/check_llm.mjs`.
 **Exact IDs are config, never hard-coded** (AGENTS.md#5).
 
+> **open_weight: true** — Primary generator is **Muse Spark Open** (`meta-models/muse-spark-open-1026`) on **Baseten partner inference** → eligible for *Best Build on Meta Open Weight Models* ($10K). Flag this in Cerebral Valley submission.
+
 > Configure exact ids in `.env` from the official Model list; do not hard-code. See `.env.example`. Run `node scripts/check_llm.mjs` to verify.
 
 ## Dependencies and datasets
