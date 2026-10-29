@@ -3,9 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "workspaces": ["kernel", "server", "verify"],
+  "workspaces": [
+    "kernel",
+    "server",
+    "verify"
+  ],
   "scripts": {
     "test": "node --test verify/tests/*.test.mjs",
     "check:llm": "node scripts/check_llm.mjs"
+  },
+  "dependencies": {
+    "quickjs-emscripten": "^0.32.0"
   }
 }

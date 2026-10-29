@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "version", "title", "description", "language", "intents", "inputs", "outputs", "permissions", "limits", "examples", "properties", "tolerance", "view", "assumptions", "provenance", "sha256"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+    "version": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "language": { "type": "string" },
+    "intents": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "inputs": { "type": "object" },
+    "outputs": { "type": "object" },
+    "permissions": { "type": "array", "maxItems": 0 },
+    "limits": {
+      "type": "object",
+      "required": ["timeout_ms", "memory_kb", "output_max_bytes"],
+      "properties": {
+        "timeout_ms": { "type": "number", "minimum": 10, "maximum": 5000 },
+        "memory_kb": { "type": "number", "minimum": 64, "maximum": 65536 },
+        "output_max_bytes": { "type": "number", "minimum": 64, "maximum": 65536 }
+      }
+    },
+    "examples": { "type": "array", "minItems": 2 },
+    "properties": { "type": "array" },
+    "tolerance": { "type": "object" },
+    "view": { "type": "object" },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "provenance": { "type": "object" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}
