@@ -1,0 +1,11 @@
+{
+  "name": "tessercore",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["kernel", "server", "verify"],
+  "scripts": {
+    "test": "node --test verify/tests/*.test.mjs",
+    "check:llm": "node scripts/check_llm.mjs"
+  }
+}
