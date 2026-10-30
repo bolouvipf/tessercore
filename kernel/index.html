@@ -29,8 +29,9 @@ const log = (m)=> document.getElementById("log").textContent += m+"\n";
 const tierEl = document.getElementById("tier");
 let current=null, formCtl=null;
 
+const REG = "http://localhost:8787";
 async function loadFromRegistry(id){
-  const r = await fetch(`/registry/modules/${id}`);
+  const r = await fetch(`${REG}/registry/modules/${id}`);
   if(!r.ok) throw new Error("registry "+r.status);
   const {manifest, code, sig} = await r.json();
   const hash = await sha256Hex(code);
@@ -42,16 +43,16 @@ async function loadFromRegistry(id){
 
 async function resolveQuery(q){
   // T1 rule-based first (no LLM)
-  const r1 = await fetch(`/registry/resolve?q=${encodeURIComponent(q)}`).then(r=>r.json());
+  const r1 = await fetch(`${REG}/registry/resolve?q=${encodeURIComponent(q)}`).then(r=>r.json());
   if(r1.module_id){ tierEl.textContent="T1 rule-based (0 LLM)"; record({tier:"T1", llm_calls:0, module_id:r1.module_id}); return r1.module_id; }
   // T2 Muse router
   tierEl.textContent="T2 routing…";
-  const r2 = await fetch("/resolve/llm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
+  const r2 = await fetch(`${REG}/resolve/llm`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
   if(r2.module_id){ record({tier:"T2", llm_calls:1, module_id:r2.module_id}); return r2.module_id; }
   // T3 generation
   tierEl.textContent="T3 generating…";
   log("T3: drafting contract + 2 impls…");
-  const r3 = await fetch("/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
+  const r3 = await fetch(`${REG}/generate`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
   log(`T3 verdict ${r3.report.verdict} — ${r3.report.checks.map(c=>c.name+":"+c.ok).join(", ")}`);
   if(r3.report.verdict!=="VERIFIED") throw new Error("generation rejected: "+r3.report.verdict);
   // show assumptions + example for human confirm
