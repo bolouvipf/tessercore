@@ -26,7 +26,9 @@ function runViaWorker(worker, code, input, limits) {
   return new Promise((resolve) => {
     const id = Math.random().toString(36).slice(2);
     const t0 = performance.now();
-    const timer = setTimeout(() => { try{ worker.terminate(); }catch{} resolve({ ok:false, error:{code:"TIMEOUT", message:`watchdog terminate after ${limits.timeout_ms}ms`}, latency_ms: performance.now()-t0, mechanism:"watchdog"}); }, (limits.timeout_ms ?? 200) + 50);
+    // WASM engine lazy-load needs ~1s (677KB gz) — keep watchdog generous so first run isn't cut
+    const watchdogMs = 8000;
+    const timer = setTimeout(() => { try{ worker.terminate(); }catch{} resolve({ ok:false, error:{code:"TIMEOUT", message:`watchdog terminate after ${watchdogMs}ms`}, latency_ms: performance.now()-t0, mechanism:"watchdog"}); }, watchdogMs);
     const handler = (e) => {
       if (e.data.id !== id) return;
       clearTimeout(timer);
