@@ -21,10 +21,10 @@
 <div id="out" style="margin-top:1rem;border:1px solid #ddd;padding:.6rem;min-height:2rem"></div>
 <pre id="log"></pre>
 <script type="module">
-import { validateManifest } from "./manifest.js";
-import { sha256Hex } from "./hash.js";
-import { buildInputForm, renderOutput } from "./views.js";
-import { record, tierMix } from "./metrics.js";
+import { validateManifest } from "/kernel/manifest.js";
+import { sha256Hex } from "/kernel/hash.js";
+import { buildInputForm, renderOutput } from "/kernel/views.js";
+import { record, tierMix } from "/kernel/metrics.js";
 const log = (m)=> document.getElementById("log").textContent += m+"\n";
 const tierEl = document.getElementById("tier");
 let current=null, formCtl=null;
@@ -84,8 +84,8 @@ document.getElementById("go").onclick = async ()=>{
 async function runCurrent(){
   if(!current) return;
   const input = formCtl.getValues();
-  const worker = new Worker(new URL("../sandbox/worker.js", import.meta.url), {type:"module"});
-  const { loadAndRun } = await import("./loader.js");
+  const worker = new Worker(new URL("/sandbox/worker.js", import.meta.url), {type:"module"});
+  const { loadAndRun } = await import("/kernel/loader.js");
   const r = await loadAndRun({manifest:current.manifest, code:current.code, input, worker});
   const outEl=document.getElementById("out");
   if(r.ok) renderOutput(current.manifest, r.output, outEl); else outEl.textContent = `Error ${r.error.code}: ${r.error.message}`;
