@@ -44,11 +44,11 @@ async function loadFromRegistry(id){
 async function resolveQuery(q){
   // T1 rule-based first (no LLM)
   const r1 = await fetch(`${REG}/registry/resolve?q=${encodeURIComponent(q)}`).then(r=>r.json());
-  if(r1.module_id){ tierEl.textContent="T1 rule-based (0 LLM)"; record({tier:"T1", llm_calls:0, module_id:r1.module_id}); return r1.module_id; }
+  if(r1.module_id){ tierEl.textContent="T1 rule-based (0 LLM)"; record({tier:"T1", llm_calls:0, module_id:r1.module_id}); return {id: r1.module_id, args: r1.args||null}; }
   // T2 Muse router
   tierEl.textContent="T2 routing…";
   const r2 = await fetch(`${REG}/resolve/llm`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})}).then(r=>r.json());
-  if(r2.module_id){ record({tier:"T2", llm_calls:1, module_id:r2.module_id}); return r2.module_id; }
+  if(r2.module_id){ record({tier:"T2", llm_calls:1, module_id:r2.module_id}); return {id: r2.module_id, args: r2.args||null}; }
   // T3 generation
   tierEl.textContent="T3 generating…";
   log("T3: drafting contract + 2 impls…");
@@ -59,7 +59,7 @@ async function resolveQuery(q){
   const ok = confirm(`Generated ${r3.manifest.title}\nAssumptions: ${(r3.manifest.assumptions||[]).join("; ")}\nExample: ${JSON.stringify(r3.manifest.examples[0])}\nLooks right?`);
   if(!ok) throw new Error("human rejected");
   record({tier:"T3", llm_calls:4, module_id:r3.manifest.id});
-  return r3.manifest.id;
+  return {id: r3.manifest.id, args: r3.manifest.examples[0]?.input || null};
 }
 
 document.getElementById("go").onclick = async ()=>{
@@ -67,11 +67,23 @@ document.getElementById("go").onclick = async ()=>{
   if(!q) return;
   const t0=performance.now();
   try{
-    const id = await resolveQuery(q);
+    const res = await resolveQuery(q);
+    let id = typeof res==="string" ? res : res.id;
+    let args = typeof res==="string" ? null : res.args;
+    // T1 fallback: extract amount/direction from query for fcfa if router didn't provide args
+    if(!args || !Object.keys(args).length){
+      const num = parseFloat((q.match(/[\d,.]+/)||[""])[0].replace(/,/g,""));
+      if(!isNaN(num) && id==="fcfa_eur_convert"){
+        const lower=q.toLowerCase();
+        const dir = (lower.includes("eur to") || lower.includes("to fcfa") || lower.includes("euro to fcfa")) ? "EUR_TO_XOF" : "XOF_TO_EUR";
+        args={amount:num, direction:dir};
+      }
+    }
     const {manifest, code} = await loadFromRegistry(id);
     current={manifest, code};
     document.getElementById("status").textContent = `${manifest.title} — permissions: ${JSON.stringify(manifest.permissions)} — view: ${manifest.view.type}`;
-    formCtl = buildInputForm(manifest, document.getElementById("form"), manifest.examples[0].input);
+    const initial = args && Object.keys(args).length ? args : manifest.examples[0].input;
+    formCtl = buildInputForm(manifest, document.getElementById("form"), initial);
     const btn=document.createElement("button"); btn.textContent="Run (sandbox)"; btn.onclick=runCurrent;
     document.getElementById("form").appendChild(btn);
     // render assumptions
