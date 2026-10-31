@@ -81,16 +81,21 @@ document.getElementById("go").onclick = async ()=>{
   }catch(e){ document.getElementById("out").textContent = String(e.message||e); log(String(e)); }
 };
 
+let _worker=null;
+function getWorker(){
+  if(_worker) return _worker;
+  _worker = new Worker(new URL("/sandbox/worker.js", import.meta.url), {type:"module"});
+  return _worker;
+}
 async function runCurrent(){
   if(!current) return;
   const input = formCtl.getValues();
-  const worker = new Worker(new URL("/sandbox/worker.js", import.meta.url), {type:"module"});
+  const worker = getWorker();
   const { loadAndRun } = await import("/kernel/loader.js");
   const r = await loadAndRun({manifest:current.manifest, code:current.code, input, worker});
   const outEl=document.getElementById("out");
-  if(r.ok) renderOutput(current.manifest, r.output, outEl); else outEl.textContent = `Error ${r.error.code}: ${r.error.message}`;
+  if(r.ok) renderOutput(current.manifest, r.output, outEl); else { outEl.textContent = `Error ${r.error.code}: ${r.error.message}`; if(r.error.code==="TIMEOUT") { try{_worker.terminate();}catch{} _worker=null; } }
   log(`run ${current.manifest.id} -> ${JSON.stringify(r).slice(0,400)}`);
-  worker.terminate();
 };
 // auto-demo fcfa on load
 loadFromRegistry("fcfa_eur_convert").then(({manifest,code})=>{
